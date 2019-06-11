@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+   <head>
+      <meta charset="utf-8">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+      <title>Bowling</title>
+
+      <!-- Load in bootstrap for basic styling -->
+      <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+      <link rel="stylesheet" href="style.css">
+   </head>
+   <body>
+      <div class="container" id="input-block">
+         <div class="alert alert-danger" id="alert" role="alert" style="display: none">
+           This will pop up with a message if somthing goes wrong
+         </div>
+
+            <div class="row justify-content-center">
+                  <div class="form-group col-md-6">
+                     <input type="number" id="number-of-pins" class="form-control" min="0" max="10" placeholder="Number of pins">
+                  </div>
+                  <div class="form-group col-md-2">
+                     <input type="button" onclick="addNewShot()" class="form-control" value="Add">
+                  </div>
+                  <div class="form-group col-md-2">
+                     <button type="button" class="btn btn-outline-danger" onclick="resetGame()">Reset</button>
+                  </div>
+
+            </div>
+      </div>
+      <div class="container">
+         <div class="row justify-content-center" id="frame-holder">
+
+            <!--
+            <div class="card card-frame col-lg-2 col-md-3 col-sm-6 col-12" >
+               <div class="card-body">
+                  <h5 class="card-title text-center">Frame #' + i + '</h5>
+                  <div class="row">
+                     <div class="form-group col-md-6">
+                        <label>Shot 1</label>
+                        <input type="number" class="form-control shot-input" min="0" max="10">
+                     </div>
+                     <div class="form-group col-md-6">
+                        <label>Shot 2</label>
+                        <input type="number" class="form-control shot-input" min="0" max="10">
+                     </div>
+                  </div>
+                  <div class="form-group">
+                     <label for="exampleInputEmail1">Score:</label>
+                  </div>
+               </div>
+            </div>
+          -->
+
+
+         </div>
+      </div>
+
+      <div class="container">
+         <div class="row justify-content-center">
+            <button type="button" class="btn btn-outline-warning" onClick="runAllTests()">Run Tests</button>
+         </div>
+      </div>
+
+
+
+
+
+
+
+
+      <!-- Boostrap Scripts -->
+      <script
+        src="https://code.jquery.com/jquery-3.4.1.js"
+        integrity="sha256-WpOohJOqMqqyKL9FccASB9O0KwACQJpFTUBLTYOVvVU="
+        crossorigin="anonymous"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+      <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+
+      <!-- Main Logic Script -->
+      <script type="text/javascript" src="script.js"></script>
+      <script type="text/javascript" src="tests.js"></script>
+
+
+      <script type="text/javascript">
+      var game1 = new Game(10)
+
+      for(var i = 1; i < 11; i++){
+         $("#frame-holder").append("<div class='card card-frame col-lg-2 col-md-3 col-sm-6 col-12' ><div class='card-body'><h5 class='card-title text-center'>Frame #" + i + "</h5><div class='row'><div class='form-group col-md-6'><label>Shot 1</label><p type='text' class='form-control shot-input' min='0' max='10' data-frame-id=" + i + "></div><div class='form-group col-md-6'><label>Shot 2</label><p type='text' class='form-control shot-input' min='0' max='10' data-frame-id=" + i + "></div></div><div class='form-group'><label class='score'>Score: 0</label></div></div</div>")
+      }
+
+      //var frames = document.getElementsByClassName("shot-input");
+
+      //Hooligans for adding event listneers on each input
+      // for (var i = 0; i < frames.length; i++) {
+      //    frames[i].addEventListener("change", function(){
+      //       game1.addShot(this.value, this.getAttribute("data-frame-id"));
+      //       console.log("unselected " + this.value + " " + this.getAttribute("data-frame-id"));
+      //    })
+      // }
+
+
+      function addWarningPopup(message){
+         var alert = $('#alert')
+         alert.text(message)
+         alert.slideDown("slow").delay(2000).slideUp("slow")
+      }
+
+
+
+
+
+      //Add a new shot to the game.
+      function addNewShot(){
+         var pins = Number(document.getElementById('number-of-pins').value);
+         var max = game1.getMaxPins();
+         if(pins >= 0 && pins <= max){
+            game1.addShot(pins);
+            document.getElementById('number-of-pins').value = "";
+            updateInputs();
+            updateScores();
+         } else if (pins < 0){
+            //cannot have negative number of pins
+            addWarningPopup("Must be above zero")
+            document.getElementById('number-of-pins').value = 0;
+         } else if (pins > max){
+            //you only have max pins
+            addWarningPopup("Sorry, you only have " + max + " pins on the board")
+            document.getElementById('number-of-pins').value = max;
+         } else {
+            console.log(pins);
+         }
+      }
+
+      //Update the shots in each frame
+      function updateInputs(){
+         var shotsInputs = document.getElementsByClassName("shot-input");
+         var isFirst = true;
+         for (var i = 0; i < shotsInputs.length; i++) {
+            //now go through and update based on frames
+            var frameID = shotsInputs[i].getAttribute("data-frame-id");
+            var shots = game1.getShotsByFrame(frameID);
+            //Update the input values based on whats in the game object
+            if(shots.length > 0){
+               if(isFirst){
+                  shotsInputs[i].innerHTML = shots[0].pins;
+                  isFirst = false;
+                  console.log("Was first: " + i + " with " + shots[0].pins);
+               } else {
+                  if(shots[0].isStrike())
+                     shotsInputs[i].innerHTML = "-"
+                  else if(shots[1] && Shot.isSpare(shots[0], shots[1]))
+                     shotsInputs[i].innerHTML = "/"
+                  else if (shots[1])
+                     shotsInputs[i].innerHTML = shots[1].pins;
+
+                  isFirst = true
+               }
+            }
+         }
+      }
+
+      //Update the score item on each frame
+      function updateScores(){
+         var scoresInputs = document.getElementsByClassName("score");
+         for (var i = 0; i < scoresInputs.length; i++) {
+            var shots = game1.getShotsByFrame(i + 1);
+            var score = shots[0] ? shots[0].points : 0;
+            score += shots[1] ? shots[1].points : 0;
+            scoresInputs[i].innerHTML = "Score: " + score;
+         }
+
+      }
+
+      //Go through and remove all scores, reset the screen, and so on.
+      function resetGame(){
+         game1 = new Game(10)
+         updateScores()
+         var shotsInputs = document.getElementsByClassName("shot-input");
+         var isFirst = true;
+         for (var i = 0; i < shotsInputs.length; i++) {
+            shotsInputs[i].value = "";
+         }
+
+      }
+
+
+
+      </script>
+      </body>
+</html>
