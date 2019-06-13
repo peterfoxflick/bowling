@@ -174,6 +174,13 @@ function loadGame(){
 
    //add the last frame
    $("#frame-holder").append("<div class='card card-frame col-lg-2 col-md-3 col-sm-6 col-12' ><div class='card-body'><h5 class='card-title text-center'>Frame #" + rounds + "</h5><div class='row'><div class='form-group col-md-6'><label>Shot 1</label><p type='text' class='form-control final-shot-output' min='0' max='10' data-frame-id=" + rounds + "></div><div class='form-group col-md-6'><label>Shot 2</label><p type='text' class='form-control final-shot-output' min='0' max='10' data-frame-id=" + rounds + "></div><div class='form-group col-md-6'><label>Shot 3</label><p type='text' class='form-control final-shot-output' min='0' max='10' data-frame-id=" + rounds + "></div><div class='form-group col-md-6'><label class='score'>Score: </label></div></div></div>")
+
+   $(document).on('keypress',function(e) {
+       if(e.which == 13) {
+           addNewShot();
+       }
+   });
+
 }
 
 
