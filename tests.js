@@ -27,7 +27,7 @@ function testShot(){
    console.assert(isSpare, "Test Shot: isSpare() has failed to find spare")
    shot4.pins = 3;
    isSpare = Shot.isSpare(shot3, shot4);
-   console.assert(isSpare, "Test Shot: isSpare() has flagged a false spare")
+   console.assert(!isSpare, "Test Shot: isSpare() has flagged a false spare")
 }
 
 function testGame(){
@@ -35,14 +35,14 @@ function testGame(){
    var game1 = new Game(rounds)
 
    //var game1 = new Game(rounds);
-   console.assert(game1.rounds == rounds, "Test Game: Rounds not properly initialized")
+   console.assert(game1.rounds == rounds,  "Test Game: Rounds not properly initialized")
    console.assert(game1.shots.length == 0, "Test Game: Shots not properly initialized")
-   console.assert(game1.frame == 1, "Test Game: Frames not properly initialized")
+   console.assert(game1.frame == 1,        "Test Game: Frames not properly initialized")
 
    //Test adding a shot
    game1.addShot(1)
    console.assert(game1.shots.length == 1, "Test Game: Did not add a new shot")
-   console.assert(game1.frame == 1, "Test Game: Preemptive increase of frames")
+   console.assert(game1.frame == 1,        "Test Game: Preemptive increase of frames")
 
    console.assert(game1.shots[0].points == 1, "Test Game: Failed to calculate points")
 
@@ -50,7 +50,7 @@ function testGame(){
    //Test adding a second shot
    game1.addShot(9)
    console.assert(game1.shots.length == 2, "Test Game: Did not add a second shot")
-   console.assert(game1.frame == 2, "Test Game: Preemptive increase of frames to 2")
+   console.assert(game1.frame == 2,        "Test Game: Preemptive increase of frames to 2")
 
    console.assert(game1.shots[0].points == 1, "Test Game: Failed to calculate spare points")
    console.assert(game1.shots[1].points == 9, "Test Game: Failed to calculate spare points")
@@ -59,36 +59,36 @@ function testGame(){
    //Test adding a strike
    game1.addShot(10)
    console.assert(game1.shots.length == 3, "Test Game: Did not add a second shot")
-   console.assert(game1.frame == 3, "Test Game: Preemptive increase of frames to 2")
+   console.assert(game1.frame == 3,        "Test Game: Preemptive increase of frames to 2")
 
    console.assert(game1.shots[0].points == 11, "Test Game: Failed to calculate points")
-   console.assert(game1.shots[1].points == 9, "Test Game: Failed to calculate points")
+   console.assert(game1.shots[1].points == 9,  "Test Game: Failed to calculate points")
    console.assert(game1.shots[2].points == 10, "Test Game: Failed to calculate points")
 
 
    //Test adding after a strike
    game1.addShot(7)
    console.assert(game1.shots.length == 4, "Test Game: Did not add a second shot")
-   console.assert(game1.frame == 3, "Test Game: Preemptive increase of frames to 3")
+   console.assert(game1.frame == 3,        "Test Game: Preemptive increase of frames to 3")
 
    console.assert(game1.shots[0].points == 11, "Test Game: Failed to calculate points")
-   console.assert(game1.shots[1].points == 9, "Test Game: Failed to calculate points")
+   console.assert(game1.shots[1].points == 9,  "Test Game: Failed to calculate points")
    console.assert(game1.shots[2].points == 17, "Test Game: Failed to calculate points")
-   console.assert(game1.shots[3].points == 7, "Test Game: Failed to calculate points")
+   console.assert(game1.shots[3].points == 7,  "Test Game: Failed to calculate points")
 
 
    game1.addShot(1)
    console.assert(game1.shots.length == 5, "Test Game: Did not add a final shot")
-   console.assert(game1.frame == 4, "Test Game: Preemptive increase of frames to 3")
+   console.assert(game1.frame == 4,        "Test Game: Preemptive increase of frames to 3")
 
 
    //Test Points
    game1.updatePoints()
    console.assert(game1.shots[0].points == 11, "Test Game: Failed to calculate points")
-   console.assert(game1.shots[1].points == 9, "Test Game: Failed to calculate points")
+   console.assert(game1.shots[1].points == 9,  "Test Game: Failed to calculate points")
    console.assert(game1.shots[2].points == 18, "Test Game: Failed to calculate points")
-   console.assert(game1.shots[3].points == 7, "Test Game: Failed to calculate points")
-   console.assert(game1.shots[4].points == 1, "Test Game: Failed to calculate points")
+   console.assert(game1.shots[3].points == 7,  "Test Game: Failed to calculate points")
+   console.assert(game1.shots[4].points == 1,  "Test Game: Failed to calculate points")
 
 
    //Test getShotsByFrame(f)

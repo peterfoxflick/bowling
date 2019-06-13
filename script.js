@@ -62,36 +62,41 @@ class Game {
             shot.points += this.shots[i + 1] ? this.shots[i + 1].pins : 0;
             //add second next shot
             shot.points += this.shots[i + 2] ? this.shots[i + 2].pins : 0;
-         } else if (i < this.shots.length - 1 && Shot.sameFrame(shot, this.shots[i + 1])) {
+         } else if (i < this.shots.length - 1 && Shot.sameFrame(shot, this.shots[i + 1]) && Shot.isSpare(shot, this.shots[i + 1])) {
             //Bonus points on spares are stored in the first shot of the frame
             shot.points = shot.pins;
             shot.points += this.shots[i + 2] ? this.shots[i + 2].pins : 0;
+         } else {
+            shot.points = shot.pins;
          }
       }
    }
 
    isGameOver(){
-      if(this.frame <= this.rounds)
+      if(this.frame < this.rounds)
          return false
 
       //Determin if we are still playing the last round
       if(this.frame == this.rounds){
-         var lastFrame = getShotsByFrame(this.rounds);
-         if(lastFrame.length > 0 && lastFrame[0].isStrike){
-            return lastFrame.length < 3
+         var lastFrame = this.getShotsByFrame(this.rounds);
+         if(lastFrame[0]){
+            if(lastFrame[0].isStrike())
+               return lastFrame.length == 3
+            else
+               return lastFrame.length == 2
          } else {
-            return lastFrame.length < 2
+            return false;
          }
       }
-
-      //We should never get to this point but just in case
-      return true;
+      return true; //this should never be called but just in case
    }
 
+   isLastRound(){
+      return this.rounds == this.frame
+   }
 
    getMaxPins(){
       var frames = this.getShotsByFrame(this.frame)
-      console.log(frames);
       return frames[0] ? 10 - frames[0].pins : 10;
    }
 
