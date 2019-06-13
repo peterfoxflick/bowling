@@ -1,11 +1,12 @@
 
 function runAllTests(){
-   addWarningPopup("Open the console to see results.")
    console.log("Running all tests");
    testShot();
    testGame();
    testUI();
    console.log("All test complete");
+   addWarningPopup("Open the console to see results.")
+
 }
 
 function testShot(){
