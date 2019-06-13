@@ -1,3 +1,13 @@
+/******************************************************
+ Class: Shot
+ Holds the basic data for a shot at the pins, or a
+ bowling ball knocking over pins.
+ pins: the number of pins hit (unchanged)
+ frame: the frame in which this shot was taken
+   (unchanged).
+ points: the number of points recived for this shot
+   (dynamic).
+ ******************************************************/
 class Shot {
    constructor(pins, frame){
       // pins will be the number of pins hit by the player
@@ -23,18 +33,37 @@ class Shot {
    }
 }
 
-
+/******************************************************
+ Class: Game
+ Data for a game being played. Mostly used to hold the
+ array of shots taken in a game and apply appropriate
+ logic.
+ rounds: How many frames are in the game
+ shots: array of shots taken durrring the game up to
+  the current point.
+ frame: the current frame of play
+ ******************************************************/
 class Game {
    constructor(rounds){
       this.rounds = rounds; // How many frames to play the game
       this.shots = [];
       this.frame = 1;
    }
-   //HELPER
+
+   /**************************************
+    game.getShotsByFrame( f )
+    returns the shots in a given frame 'f'
+    **************************************/
    getShotsByFrame(f){
       return this.shots.filter(s=>s.frame == f);
    }
 
+
+   /**************************************
+    game.addShot(pins)
+    adds a new shot to the array of shots
+    with the given number of 'pins'
+    **************************************/
    addShot(pins){
       // Create a new shot
       var shot = new Shot(pins, this.frame)
@@ -45,13 +74,20 @@ class Game {
          else if (this.shots.length > 0 && (this.shots[this.shots.length-1]).frame == this.frame)
             this.frame++
       }
-
+      //add the shot to the array
       this.shots.push(shot);
+      //Update the points on all shots
       this.updatePoints();
    }
 
 
-
+   /**************************************
+    game.updatePoints()
+    Go through each shot and determin how
+    many points are given. Bonus points
+    are stored in the first shot of a
+    frame.
+    **************************************/
    updatePoints(){
       for(var i = 0; i < this.shots.length; i++){
          var shot = this.shots[i]
@@ -72,14 +108,21 @@ class Game {
       }
    }
 
+   /**************************************
+    game.isGameOver()
+    determin if the game is still being
+    played or if it is over.
+    **************************************/
    isGameOver(){
       if(this.frame < this.rounds)
          return false
 
       //Determin if we are still playing the last round
-      if(this.frame == this.rounds){
+      if(this.isLastRound()){
          var lastFrame = this.getShotsByFrame(this.rounds);
          if(lastFrame[0]){
+            //In the case of a strike on the first shot, then the palyer gets a
+            // bonus round.
             if(lastFrame[0].isStrike())
                return lastFrame.length == 3
             else
@@ -88,13 +131,22 @@ class Game {
             return false;
          }
       }
-      return true; //this should never be called but just in case
+      return true; //this should never be used but in case it does.
    }
 
+   /**************************************
+    game.isLastRound()
+    if the current frame is the last one
+    **************************************/
    isLastRound(){
       return this.rounds == this.frame
    }
 
+   /**************************************
+   game.getMaxPins()
+   get the number of pins left on the
+   alley.
+   **************************************/
    getMaxPins(){
       var frames = this.getShotsByFrame(this.frame)
       return frames[0] ? 10 - frames[0].pins : 10;
@@ -102,29 +154,54 @@ class Game {
 
 }
 
-const rounds = 10
-var game1 = new Game(rounds)
 
-for(var i = 1; i < rounds; i++){
-   $("#frame-holder").append("<div class='card card-frame col-lg-2 col-md-3 col-sm-6 col-12' ><div class='card-body'><h5 class='card-title text-center'>Frame #" + i + "</h5><div class='row'><div class='form-group col-md-6'><label>Shot 1</label><p type='text' class='form-control shot-input' min='0' max='10' data-frame-id=" + i + "></div><div class='form-group col-md-6'><label>Shot 2</label><p type='text' class='form-control shot-input' min='0' max='10' data-frame-id=" + i + "></div></div><div class='form-group'><label class='score'>Score: </label></div></div></div>")
+/******************************************************
+ loadGame()
+ add the frames to the webpage, and set up the 'game'
+ variable. 'game' is used as a global variable, this
+ helps make it easier than passing it arround everwhere.
+ ******************************************************/
+var game;
+function loadGame(){
+   //Initalize the game
+   const rounds = 10
+   game = new Game(rounds)
+
+   //set up the various frames
+   for(var i = 1; i < rounds; i++){
+      $("#frame-holder").append("<div class='card card-frame col-lg-2 col-md-3 col-sm-6 col-12' ><div class='card-body'><h5 class='card-title text-center'>Frame #" + i + "</h5><div class='row'><div class='form-group col-md-6'><label>Shot 1</label><p type='text' class='form-control shot-output' min='0' max='10' data-frame-id=" + i + "></div><div class='form-group col-md-6'><label>Shot 2</label><p type='text' class='form-control shot-output' min='0' max='10' data-frame-id=" + i + "></div></div><div class='form-group'><label class='score'>Score: </label></div></div></div>")
+   }
+
+   //add the last frame
+   $("#frame-holder").append("<div class='card card-frame col-lg-2 col-md-3 col-sm-6 col-12' ><div class='card-body'><h5 class='card-title text-center'>Frame #" + rounds + "</h5><div class='row'><div class='form-group col-md-6'><label>Shot 1</label><p type='text' class='form-control final-shot-output' min='0' max='10' data-frame-id=" + rounds + "></div><div class='form-group col-md-6'><label>Shot 2</label><p type='text' class='form-control final-shot-output' min='0' max='10' data-frame-id=" + rounds + "></div><div class='form-group col-md-6'><label>Shot 3</label><p type='text' class='form-control final-shot-output' min='0' max='10' data-frame-id=" + rounds + "></div><div class='form-group col-md-6'><label class='score'>Score: </label></div></div></div>")
 }
-$("#frame-holder").append("<div class='card card-frame col-lg-2 col-md-3 col-sm-6 col-12' ><div class='card-body'><h5 class='card-title text-center'>Frame #" + rounds + "</h5><div class='row'><div class='form-group col-md-6'><label>Shot 1</label><p type='text' class='form-control final-shot-input' min='0' max='10' data-frame-id=" + rounds + "></div><div class='form-group col-md-6'><label>Shot 2</label><p type='text' class='form-control final-shot-input' min='0' max='10' data-frame-id=" + rounds + "></div><div class='form-group col-md-6'><label>Shot 3</label><p type='text' class='form-control final-shot-input' min='0' max='10' data-frame-id=" + rounds + "></div><div class='form-group col-md-6'><label class='score'>Score: </label></div></div></div>")
 
 
-
-
+/******************************************************
+ addWarningPopup(message)
+ displays the 'message' in the warning pop up dialog.
+ ******************************************************/
 function addWarningPopup(message){
    var alert = $('#alert')
    alert.text(message)
    alert.slideDown("slow").delay(2000).slideUp("slow")
 }
 
-//Add a new shot to the game.
+
+/******************************************************
+ addNewShot(message)
+ Adds a shot to the game from the input field. The
+ varification is done at this step and not deeper in
+ the data since all of the code is running client side,
+ and further checks would have been redundant.
+ ******************************************************/
 function addNewShot(){
+   //get the pins and max amount
    var pins = Number(document.getElementById('number-of-pins').value);
-   var max = game1.getMaxPins();
+   var max = game.getMaxPins();
+   //determin if it is a legal operation
    if(pins >= 0 && pins <= max){
-      game1.addShot(pins);
+      game.addShot(pins);
       document.getElementById('number-of-pins').value = "";
       updateInputs();
       updateScores();
@@ -137,86 +214,96 @@ function addNewShot(){
       addWarningPopup("Sorry, you only have " + max + " pins on the board")
       document.getElementById('number-of-pins').value = max;
    } else {
+      //This should not happen, but might if the input is not a number
+      // which it cant be.
       console.log(pins);
    }
 }
 
-//Update the shots in each frame
+/******************************************************
+ updateInputs()
+ Go through each output and get the appropriate number
+ of pins knocked donw. Since the last frame has three
+ and special rules it is taken care of sepreatly.
+ ******************************************************/
 function updateInputs(){
-   var shotsInputs = document.getElementsByClassName("shot-input");
+   var shotsOutputs = document.getElementsByClassName("shot-output");
    var isFirst = true;
    //Update all but the last frame
-   for (var i = 0; i < shotsInputs.length; i++) {
+   for (var i = 0; i < shotsOutputs.length; i++) {
       //now go through and update based on frames
-      var frameID = shotsInputs[i].getAttribute("data-frame-id");
-      var shots = game1.getShotsByFrame(frameID);
+      var frameID = shotsOutputs[i].getAttribute("data-frame-id");
+      var shots = game.getShotsByFrame(frameID);
       //Update the input values based on whats in the game object
       if(shots.length > 0){
-         if(isFirst){
+         if(isFirst){   //alternate with the two shots per frame
             if(shots[0].isStrike())
-               shotsInputs[i].innerHTML = "X"
+               shotsOutputs[i].innerHTML = "X"
             else
-               shotsInputs[i].innerHTML = shots[0].pins;
+               shotsOutputs[i].innerHTML = shots[0].pins;
             isFirst = false;
          } else {
-            if(shots[0].isStrike() && !game1.isLastRound())
-               shotsInputs[i].innerHTML = "-"
+            if(shots[0].isStrike() && !game.isLastRound())
+               shotsOutputs[i].innerHTML = "-"
             else if(shots[1] && Shot.isSpare(shots[0], shots[1]))
-               shotsInputs[i].innerHTML = "/"
+               shotsOutputs[i].innerHTML = "/"
             else if (shots[1])
-               shotsInputs[i].innerHTML = shots[1].pins;
+               shotsOutputs[i].innerHTML = shots[1].pins;
             else
-               shotsInputs[i].innerHTML = ""
+               shotsOutputs[i].innerHTML = ""
 
             isFirst = true;
          }
       } else {
-         shotsInputs[i].innerHTML = ""
+         shotsOutputs[i].innerHTML = ""
       }
 
    }
 
    //Now update the last frame
-   shotsInputs = document.getElementsByClassName("final-shot-input");
-   var shots = game1.getShotsByFrame(game1.rounds);
-
+   shotsOutputs = document.getElementsByClassName("final-shot-output");
+   var shots = game.getShotsByFrame(game.rounds);
+   //fill in each shot with the appropriate data.
    if(shots[0]){
       if(shots[0].isStrike()){
-         shotsInputs[0].innerHTML = 'X'
-         //now fill in third
+         shotsOutputs[0].innerHTML = 'X'
+         //now fill in the third
          if(shots[2]) {
-            shotsInputs[2].innerHTML = shots[2].isStrike() ? 'X' : shots[2].pins
+            shotsOutputs[2].innerHTML = shots[2].isStrike() ? 'X' : shots[2].pins
          }
       } else {
-         shotsInputs[0].innerHTML = shots[0].pins
-         shotsInputs[2].innerHTML = "-"
+         shotsOutputs[0].innerHTML = shots[0].pins
+         shotsOutputs[2].innerHTML = "-"
       }
 
+      //now fill in the second shot
       if(shots[1]){
          if(shots[1].isStrike())
-            shotsInputs[1].innerHTML = "X"
+            shotsOutputs[1].innerHTML = "X"
          else if(Shot.isSpare(shots[0], shots[1]))
-            shotsInputs[1].innerHTML = "/"
+            shotsOutputs[1].innerHTML = "/"
          else
-            shotsInputs[1].innerHTML = shots[1].pins
+            shotsOutputs[1].innerHTML = shots[1].pins
       } else {
-         shotsInputs[1].innerHTML = ""
+         shotsOutputs[1].innerHTML = ""
       }
    } else {
-      for (var i = 0; i < shotsInputs.length; i++) {
-         shotsInputs[i].innerHTML = ""
+      for (var i = 0; i < shotsOutputs.length; i++) {
+         shotsOutputs[i].innerHTML = "" //set everthing back to empty
       }
    }
-
-
 }
 
-//Update the score item on each frame
+/******************************************************
+ updateScores()
+ Have the score on each frame properly represent the
+ score earned up to that frame.
+ ******************************************************/
 function updateScores(){
    var scoresInputs = document.getElementsByClassName("score");
    var total = 0;
    for (var i = 0; i < scoresInputs.length; i++) {
-      var shots = game1.getShotsByFrame(i + 1);
+      var shots = game.getShotsByFrame(i + 1);
       if(shots.length){
          var score = shots[0] ? shots[0].points : 0;
          score += shots[1] ? shots[1].points : 0;
@@ -226,34 +313,48 @@ function updateScores(){
          scoresInputs[i].innerHTML = "Score: "
       }
    }
-
 }
 
+/******************************************************
+ updateGameStatus()
+ Determin if the user can still input more shots.
+ ******************************************************/
 function updateGameStatus(){
-   if(game1.isGameOver()){
+   if(game.isGameOver()){
       document.getElementById("number-of-pins").disabled = true;
    } else {
       document.getElementById("number-of-pins").disabled = false;
    }
 }
 
-//Go through and remove all scores, reset the screen, and so on.
+/******************************************************
+ resetGame()
+ Remove all data and clear the page.
+ ******************************************************/
 function resetGame(){
-   game1 = new Game(10)
+   game = new Game(10)
    updateAll();
 }
 
-
+/******************************************************
+ addRandomData()
+ Fill the page with random data, very helpful for
+ testing.
+ ******************************************************/
 function addRandomData(){
-   while(!game1.isGameOver()){
-      var max = game1.getMaxPins();
+   resetGame()
+   while(!game.isGameOver()){
+      var max = game.getMaxPins() + 1;
       var pins = Math.floor(Math.random() * max);
-      game1.addShot(pins);
+      game.addShot(pins);
    }
-
    updateAll();
 }
 
+/******************************************************
+ updateAll()
+ Call all the various update functions.
+ ******************************************************/
 function updateAll(){
    updateGameStatus()
    updateScores()
