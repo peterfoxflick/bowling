@@ -6,7 +6,7 @@ function runAllTests(){
    testUI();
    console.log("All test complete");
    addWarningPopup("Open the console to see results.")
-
+   resetGame()
 }
 
 function testShot(){
