@@ -119,16 +119,18 @@ class Game {
 
       //Determin if we are still playing the last round
       if(this.isLastRound()){
-         var lastFrame = this.getShotsByFrame(this.rounds);
-         if(lastFrame[0]){
-            //In the case of a strike on the first shot, then the palyer gets a
-            // bonus round.
-            if(lastFrame[0].isStrike())
-               return lastFrame.length == 3
-            else
-               return lastFrame.length == 2
-         } else {
-            return false;
+         var shots = this.getShotsByFrame(this.rounds);
+         var round = shots.length + 1; // 1 2 or 3
+         switch(round) {
+            case 1:
+            case 2:
+               return false;
+            case 3:
+               if(shots[0].isStrike() || Shot.isSpare(shots[0], shots[1]))
+                  return false
+               return true
+            default:
+               return true
          }
       }
       return true; //this should never be used but in case it does.
@@ -139,7 +141,7 @@ class Game {
     if the current frame is the last one
     **************************************/
    isLastRound(){
-      return this.rounds == this.frame
+      return this.rounds === this.frame
    }
 
    /**************************************
@@ -148,8 +150,29 @@ class Game {
    alley.
    **************************************/
    getMaxPins(){
-      var frames = this.getShotsByFrame(this.frame)
-      return frames[0] ? 10 - frames[0].pins : 10;
+      if(this.isLastRound()){
+         var shots = this.getShotsByFrame(this.rounds);
+         var round = shots.length + 1; // 1 2 or 3
+         switch(round) {
+            case 1:
+               return 10;
+            case 2:
+               if(shots[0].isStrike())
+                  return 10;
+               return 10 - shots[0].pins;
+            case 3:
+               if(shots[0].isStrike() && !shots[1].isStrike())
+                  return 10 - shots[1].pins;
+               return 10
+            default:
+               return 10
+         }
+
+      }
+
+
+      var shots = this.getShotsByFrame(this.frame)
+      return shots[0] ? 10 - shots[0].pins : 10;
    }
 
 }
@@ -210,8 +233,6 @@ function addNewShot(){
    if(pins >= 0 && pins <= max){
       game.addShot(pins);
       document.getElementById('number-of-pins').value = "";
-      updateInputs();
-      updateScores();
    } else if (pins < 0){
       //cannot have negative number of pins
       addWarningPopup("Must be above zero")
@@ -225,6 +246,7 @@ function addNewShot(){
       // which it cant be.
       console.log(pins);
    }
+   updateAll();
 }
 
 /******************************************************
@@ -287,9 +309,11 @@ function updateInputs(){
       if(shots[1]){
          if(shots[1].isStrike())
             shotsOutputs[1].innerHTML = "X"
-         else if(Shot.isSpare(shots[0], shots[1]))
+         else if(Shot.isSpare(shots[0], shots[1])){
             shotsOutputs[1].innerHTML = "/"
-         else
+            if(shots[2])
+               shotsOutputs[2].innerHTML = shots[2].isStrike() ? 'X' : shots[2].pins
+         } else
             shotsOutputs[1].innerHTML = shots[1].pins
       } else {
          shotsOutputs[1].innerHTML = ""
