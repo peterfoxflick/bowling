@@ -1,12 +1,12 @@
 
 function runAllTests(){
-   console.log("running all tests");
+   addWarningPopup("Open the console to see results.")
+   console.log("Running all tests");
    testShot();
    testGame();
+   testUI();
    console.log("All test complete");
 }
-
-
 
 function testShot(){
    //Basic test of constructor and variables
@@ -97,4 +97,61 @@ function testGame(){
    console.assert(frame1[1].pins == 9, "Test Game: Failed to get shot 1 by frame 1")
    console.assert(frame1.length == 2, "Test Game: Failed to get shot 0 by frame 1, returned " + frame1.length)
 
+}
+
+
+function testUI(){
+   resetGame()
+
+   //Test shots output, and ability to add new shots via input
+   document.getElementById('number-of-pins').value = 7
+   addNewShot()
+   console.assert(game.getShotsByFrame(1).length == 1, "Test UI: Failed to add new shot")
+
+   //Test adding a spare
+   document.getElementById('number-of-pins').value = 3
+   addNewShot()
+   var shotsOutputs = document.getElementsByClassName("shot-output");
+   console.assert(game.getShotsByFrame(1).length == 2, "Test UI: Failed to add new shot")
+   console.assert(shotsOutputs[1].innerHTML == "/", "Test UI: Failed to display spare")
+
+   //Test adding a Strike
+   document.getElementById('number-of-pins').value = 10
+   addNewShot()
+   var shotsOutputs = document.getElementsByClassName("shot-output");
+   console.assert(game.getShotsByFrame(2).length == 1, "Test UI: Failed to add new shot")
+   console.assert(shotsOutputs[2].innerHTML == "X", "Test UI: Failed to display strike")
+   console.assert(shotsOutputs[3].innerHTML == "-", "Test UI: Failed to display strikes second shot")
+
+   var scoresInputs = document.getElementsByClassName("score");
+   console.assert(scoresInputs[0].innerHTML == "Score: 20", "Test UI: Failed to display score")
+   console.assert(scoresInputs[1].innerHTML == "Score: 30", "Test UI: Failed to display score")
+   console.assert(scoresInputs[2].innerHTML == "Score: ", "Test UI: Failed to display score")
+
+   //Test adding illegal shots
+   document.getElementById('number-of-pins').value = 5
+   addNewShot()
+   console.assert(game.getShotsByFrame(3).length == 1, "Test UI: Failed to add new shot")
+
+   //Test adding a negative shot
+   document.getElementById('number-of-pins').value = -3
+   addNewShot()
+   console.assert(game.getShotsByFrame(3).length == 1, "Test UI: Added negative shot")
+   addNewShot()
+   console.assert(game.getShotsByFrame(3).length == 2, "Test UI: Failed to provided alterenative to negative")
+   console.assert(game.getShotsByFrame(3)[1].pins == 0, "Test UI: Failed to add empty shot")
+
+
+   //Test adding illegal shots
+   document.getElementById('number-of-pins').value = 5
+   addNewShot()
+   console.assert(game.getShotsByFrame(4).length == 1, "Test UI: Failed to add new shot")
+
+   //Test adding a shot above maximum
+   document.getElementById('number-of-pins').value = 7
+   addNewShot()
+   console.assert(game.getShotsByFrame(4).length == 1, "Test UI: Added abundant shot")
+   addNewShot()
+   console.assert(game.getShotsByFrame(4).length == 2, "Test UI: Failed to provided alterenative to pins exceeding max")
+   console.assert(game.getShotsByFrame(4)[1].pins == 5, "Test UI: Failed to add spare")
 }
