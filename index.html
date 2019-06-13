@@ -13,6 +13,13 @@
    </head>
    <body onload="loadGame()">
 
+      <div class="jumbotron jumbotron-fluid">
+        <div class="container">
+          <h1 class="display-4">Lets Bowl</h1>
+          <p class="lead">To get started enter in how many pins you hit in the field below.</p>
+        </div>
+      </div>
+
       <div class="container" id="input-block">
          <div class="alert alert-danger" id="alert" role="alert" style="display: none">
            This will pop up with a message if somthing goes wrong
@@ -61,8 +68,12 @@
 
       <div class="container">
          <div class="row justify-content-center">
-            <button type="button" class="btn btn-outline-warning" onClick="runAllTests()">Run Tests</button>
-            <button type="button" class="btn btn-outline-primary" onClick="addRandomData()">Add Random Data</button>
+            <div class="col-md-2">
+               <button type="button" class="btn btn-outline-warning" onClick="runAllTests()">Run Tests</button>
+            </div>
+            <div class="col-md-2">
+               <button type="button" class="btn btn-outline-primary" onClick="addRandomData()">Add Random Data</button>
+            </div>
          </div>
       </div>
 
